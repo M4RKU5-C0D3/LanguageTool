@@ -102,6 +102,15 @@ wget https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.bin -O fa
 
 ### Optional: ngram data
 
+Improves language detection and reduces false positives.
+
+```sh
+mkdir -p ngrams
+wget https://languagetool.org/download/ngram-data/ngrams-de-20150819.zip -O ngrams/ngrams-de.zip
+unzip ngrams/ngrams-de.zip -d ngrams/
+rm ngrams/ngrams-de.zip
+```
+
 ```yaml
 environment:
   LANG_MODEL: /models
@@ -109,7 +118,7 @@ volumes:
   - ./ngrams:/models:ro
 ```
 
-ngram data is available at <https://languagetool.org/download/ngram-data/>.
+Available languages: `de`, `en`, `es`, `fr`, `nl` – see <https://languagetool.org/download/ngram-data/>.
 
 ### Optional: custom `server.properties`
 
