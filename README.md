@@ -101,6 +101,18 @@ The snapshot version is re-downloaded on `docker compose build`:
 docker compose build --no-cache
 ```
 
+## Disclaimer
+
+This is a personal project. It only uses the official public LanguageTool
+snapshots from <https://languagetool.org/download/snapshots/> and is not
+affiliated with or endorsed by the LanguageTool team.
+
+## Vibe coding
+
+This project was built with AI assistance via [opencode](https://opencode.ai)
+using the model `big-pickle`. All code was reviewed and released by a human
+maintainer.
+
 ## Files
 
 - `Dockerfile` – image definition (Temurin JRE 17, snapshot ZIP)
