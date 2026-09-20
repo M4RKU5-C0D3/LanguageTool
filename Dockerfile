@@ -19,7 +19,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL -o /tmp/LanguageTool.zip "${SNAPSHOT_URL}" \
-    && file /tmp/LanguageTool.zip | grep -q "Zip archive" \
+    && unzip -t /tmp/LanguageTool.zip >/dev/null 2>&1 \
     && mkdir -p /opt/languagetool/app \
     && unzip -q /tmp/LanguageTool.zip -d /opt/languagetool \
     && rm /tmp/LanguageTool.zip \
