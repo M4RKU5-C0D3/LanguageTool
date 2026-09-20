@@ -1,0 +1,27 @@
+services:
+  languagetool:
+    build: .
+    container_name: languagetool
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8081:8081" # 0.0.0.0:8081:8081 for LAN access
+    environment:
+      JAVA_OPTS: "-Xmx1g" # JVM heap size
+      # ALLOW_ORIGIN: "*"      # needed for the browser add-on
+      # Optional: fastText for better language detection
+      # FASTTEXT_MODEL: /fastText/lid.176.bin
+      # FASTTEXT_BINARY: /usr/local/bin/fasttext
+      # Optional: ngram data directory
+      # LANG_MODEL: /models
+    volumes:
+      # Optional: custom server options, see https://dev.languagetool.org/http-server
+      # - ./server.properties:/etc/languagetool/server.properties:ro
+      # Optional: fastText model and binary (see FASTTEXT_* above)
+      # - ./fasttext/lid.176.bin:/fastText/lid.176.bin:ro
+      # Optional: ngram data, e.g. https://languagetool.org/download/ngram-data/
+      # - ./ngrams:/models:ro
+      # Persist e.g. ~/.languagetool.cfg
+      - languagetool-home:/home/languagetool
+
+volumes:
+  languagetool-home:
