@@ -16,7 +16,6 @@ RUN rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL -o /tmp/LanguageTool.zip "${SNAPSHOT_URL}"
 RUN unzip -t /tmp/LanguageTool.zip >/dev/null 2>&1
-RUN mkdir -p /opt/languagetool/app
 RUN unzip -q /tmp/LanguageTool.zip -d /opt/languagetool
 RUN rm /tmp/LanguageTool.zip
 RUN mv /opt/languagetool/LanguageTool-* /opt/languagetool/app
