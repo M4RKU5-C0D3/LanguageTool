@@ -9,9 +9,10 @@
 
 FROM debian:bookworm-slim AS fasttext-build
 
-RUN apt-get update && apt-get install -y --no-install-recommends g++ make wget && rm -rf /var/lib/apt/lists/*
-RUN wget -qO- https://github.com/facebookresearch/fastText/archive/v0.9.2.tar.gz | tar xz
-RUN cd fastText-0.9.2 && make && cp fasttext /usr/local/bin/fasttext
+RUN apt-get update && apt-get install -y --no-install-recommends g++ make curl && rm -rf /var/lib/apt/lists/*
+RUN curl -fsSL -o /tmp/fasttext.tar.gz https://github.com/facebookresearch/fastText/archive/v0.9.2.tar.gz
+RUN tar xzf /tmp/fasttext.tar.gz -C /tmp && rm /tmp/fasttext.tar.gz
+RUN make -C /tmp/fastText-0.9.2 && cp /tmp/fastText-0.9.2/fasttext /usr/local/bin/fasttext
 
 FROM eclipse-temurin:17-jre
 
