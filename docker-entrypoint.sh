@@ -22,7 +22,7 @@ args=(
   --port "${PORT:-8081}"
   --allow-origin "${ALLOW_ORIGIN:-*}"
 )
-[ -n "${LANG_MODEL:-}" ] && args+=(--langmodel "${LANG_MODEL}")
+[ -n "${LANG_MODEL:-}" ] && args+=(--languageModel "${LANG_MODEL}")
 
 # shellcheck disable=SC2086
 exec java ${JAVA_OPTS:-} -cp /opt/languagetool/app/languagetool-server.jar \

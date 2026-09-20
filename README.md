@@ -78,7 +78,7 @@ The following variables can be set in `compose.yaml` under `environment`:
 | `ALLOW_ORIGIN`    | `*`     | Allowed origin for the browser add-on                    |
 | `FASTTEXT_MODEL`  | –       | Path to the fastText model (`lid.176.bin`)               |
 | `FASTTEXT_BINARY` | –       | Path to the fastText binary                              |
-| `LANG_MODEL`      | –       | Directory with ngram data (`--langmodel`)                |
+| `LANG_MODEL`      | –       | Directory with ngram data (`--languageModel`)             |
 
 ### Optional: fastText (language detection)
 
