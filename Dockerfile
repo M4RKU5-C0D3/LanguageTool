@@ -18,9 +18,9 @@ RUN apt-get update \
         unzip \
     && rm -rf /var/lib/apt/lists/*
 
-ADD --chown=root:root ${SNAPSHOT_URL} /tmp/LanguageTool.zip
-
-RUN mkdir -p /opt/languagetool/app \
+RUN curl -fsSL -o /tmp/LanguageTool.zip "${SNAPSHOT_URL}" \
+    && file /tmp/LanguageTool.zip | grep -q "Zip archive" \
+    && mkdir -p /opt/languagetool/app \
     && unzip -q /tmp/LanguageTool.zip -d /opt/languagetool \
     && rm /tmp/LanguageTool.zip \
     && mv /opt/languagetool/LanguageTool-* /opt/languagetool/app \
