@@ -17,6 +17,44 @@ docker compose up --build -d
 
 The server is then available at `http://localhost:8081`.
 
+## Quick start (GHCR)
+
+Use the pre-built image directly – no local build required:
+
+```sh
+docker run -d --name languagetool -p 8081:8081 \
+  ghcr.io/m4rku5-c0d3/languagetool:latest
+```
+
+Or with Docker Compose (`image:` instead of `build:`):
+
+```yaml
+services:
+  languagetool:
+    image: ghcr.io/m4rku5-c0d3/languagetool:latest
+    container_name: languagetool
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8081:8081"
+    environment:
+      JAVA_OPTS: "-Xmx1g"
+    volumes:
+      - languagetool-home:/home/languagetool
+
+volumes:
+  languagetool-home:
+```
+
+## Browser-Extension
+
+When configuring the LanguageTool browser extension, append `/v2` to the server URL:
+
+```
+https://your-domain.example.com/v2
+```
+
+Without `/v2`, the extension sends requests to the old `/check` endpoint, which is not supported by the self-hosted server.
+
 ## Test
 
 ```sh
