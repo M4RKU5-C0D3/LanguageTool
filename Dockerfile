@@ -11,24 +11,20 @@ FROM eclipse-temurin:17-jre
 
 ARG SNAPSHOT_URL=https://languagetool.org/download/snapshots/LanguageTool-latest-snapshot.zip
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        bash \
-        curl \
-        unzip \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends bash curl unzip
+RUN rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL -o /tmp/LanguageTool.zip "${SNAPSHOT_URL}" \
-    && unzip -t /tmp/LanguageTool.zip >/dev/null 2>&1 \
-    && mkdir -p /opt/languagetool/app \
-    && unzip -q /tmp/LanguageTool.zip -d /opt/languagetool \
-    && rm /tmp/LanguageTool.zip \
-    && mv /opt/languagetool/LanguageTool-* /opt/languagetool/app \
-    && test -f /opt/languagetool/app/languagetool-server.jar
+RUN curl -fsSL -o /tmp/LanguageTool.zip "${SNAPSHOT_URL}"
+RUN unzip -t /tmp/LanguageTool.zip >/dev/null 2>&1
+RUN mkdir -p /opt/languagetool/app
+RUN unzip -q /tmp/LanguageTool.zip -d /opt/languagetool
+RUN rm /tmp/LanguageTool.zip
+RUN mv /opt/languagetool/LanguageTool-* /opt/languagetool/app
+RUN test -f /opt/languagetool/app/languagetool-server.jar
 
-RUN groupadd --system languagetool \
-    && useradd --system --gid languagetool --home-dir /home/languagetool --shell /usr/sbin/nologin languagetool \
-    && install -d -o languagetool -g languagetool /home/languagetool /etc/languagetool
+RUN groupadd --system languagetool
+RUN useradd --system --gid languagetool --home-dir /home/languagetool --shell /usr/sbin/nologin languagetool
+RUN install -d -o languagetool -g languagetool /home/languagetool /etc/languagetool
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
