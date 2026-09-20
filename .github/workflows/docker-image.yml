@@ -1,0 +1,96 @@
+name: Build and publish Docker image
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Rebuild and push even if the current snapshot is already published"
+        type: boolean
+        default: false
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "0 3 * * *" # daily, picks up new LanguageTool snapshots
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+concurrency:
+  group: docker-build
+  cancel-in-progress: true
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Normalize image name (GHCR requires lowercase)
+        shell: bash
+        run: echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get LanguageTool snapshot date
+        id: snapshot
+        shell: bash
+        run: |
+          # The "latest" snapshot is versioned by its release date:
+          # https://languagetool.org/download/snapshots/LanguageTool-latest-snapshot.zip
+          LAST_MODIFIED=$(curl -fsSI https://languagetool.org/download/snapshots/LanguageTool-latest-snapshot.zip \
+            | awk 'tolower($1)=="last-modified:" {$1=""; sub(/^ /, ""); print}')
+          TS=$(date -u -d "${LAST_MODIFIED}" +%Y%m%d)
+          echo "date=${TS}" >> "$GITHUB_OUTPUT"
+          echo "LanguageTool snapshot date: ${TS}"
+
+          FORCE="${{ inputs.force == true }}"
+          REF="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${TS}"
+          if [ "${FORCE}" = "true" ]; then
+            echo "Manual build forced, skipping availability check."
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          elif docker buildx imagetools inspect "${REF}" >/dev/null 2>&1; then
+            echo "Image ${REF} already published, skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up image tags and labels
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ steps.snapshot.outputs.date }}
+            type=raw,value=latest
+            type=sha
+            type=ref,event=branch
+
+      - name: Build and push to GHCR
+        if: steps.snapshot.outputs.skip == 'false'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

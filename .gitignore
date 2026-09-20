@@ -1,0 +1,13 @@
+# Optional LanguageTool data (see README)
+fasttext/
+ngrams/
+
+# Custom server configuration
+server.properties
+
+# Environment / secrets
+.env
+.env.*
+
+# Logs
+*.log

@@ -1,5 +1,7 @@
 # LanguageTool Docker
 
+![Build](https://img.shields.io/github/actions/workflow/status/M4RKU5-C0D3/LanguageTool/docker-image.yml?branch=main&label=Build&logo=github&logoColor=white)
+
 LanguageTool as a local HTTP server in a Docker container – based on the official
 documentation: <https://dev.languagetool.org/http-server>
 
@@ -101,6 +103,37 @@ The snapshot version is re-downloaded on `docker compose build`:
 docker compose build --no-cache
 ```
 
+## CI / GHCR
+
+A GitHub Actions workflow (`.github/workflows/docker-image.yml`) builds the image
+and publishes it to the GitHub Container Registry as a **public** image:
+
+`ghcr.io/m4rku5-c0d3/languagetool` with tags:
+
+- `<snapshot-date>` (e.g. `20260919`, derived from `LanguageTool-latest-snapshot.zip`)
+- `latest`
+- git SHA and `main`
+
+It runs daily (schedule), on pushes to `main`, and manually via
+**Actions → *Build and publish Docker image* → Run workflow**. Already-published
+snapshot dates are skipped; use the `force` input to rebuild anyway.
+
+Pull it anywhere with:
+
+```sh
+docker pull ghcr.io/m4rku5-c0d3/languagetool:latest
+```
+
+If a new package shows up as private, set its visibility to public in
+**Packages → *languagetool* → Package settings**. Since the repo is public, new
+images are public by default.
+
+## Files
+
+- `Dockerfile` – image definition (Temurin JRE 17, snapshot ZIP)
+- `docker-entrypoint.sh` – start script, generates `server.properties`
+- `compose.yaml` – compose configuration
+
 ## Disclaimer
 
 This is a personal project. It only uses the official public LanguageTool
@@ -112,9 +145,3 @@ affiliated with or endorsed by the LanguageTool team.
 This project was built with AI assistance via [opencode](https://opencode.ai)
 using the model `big-pickle`. All code was reviewed and released by a human
 maintainer.
-
-## Files
-
-- `Dockerfile` – image definition (Temurin JRE 17, snapshot ZIP)
-- `docker-entrypoint.sh` – start script, generates `server.properties`
-- `compose.yaml` – compose configuration
